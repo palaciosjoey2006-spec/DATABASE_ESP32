@@ -3,164 +3,473 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control IoT Global</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Iconos Lucide -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- SweetAlert2 para alertas bonitas -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Sistema SCADA - Monitoreo Térmico IoT</title>
     
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'tech': ['Orbitron', 'sans-serif'],
+                        'body': ['Roboto', 'sans-serif'],
+                    },
+                    colors: {
+                        metal: { 900: '#0f172a', 800: '#1e293b', 700: '#334155' },
+                        neon: {
+                            blue: '#06b6d4',
+                            green: '#10b981',
+                            purple: '#a855f7',
+                            red: '#ef4444', 
+                            orange: '#f97316'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        .glow-on { box-shadow: 0 0 20px #fbbf24; border-color: #fbbf24; }
+        body { font-family: 'Roboto', sans-serif; background-color: #0b1120; color: #e2e8f0; }
+        
+        /* Efectos de Cristal y Neón */
         .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.1);
+            backdrop-filter: blur(5px);
+        }
+        .glass-panel-avg {
+            background: linear-gradient(145deg, rgba(40, 30, 60, 0.9), rgba(15, 23, 42, 0.95));
+            border: 1px solid rgba(168, 85, 247, 0.5);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+            backdrop-filter: blur(5px);
+        }
+        .tech-font { font-family: 'Orbitron', sans-serif; }
+        
+        /* Estilos de botones de Actuadores */
+        .led-btn-on {
+            background-color: rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+            box-shadow: 0 0 15px #10b981;
+            color: #10b981;
+        }
+        .led-btn-off {
+            background-color: rgba(30, 41, 59, 0.5);
+            border-color: #334155;
+            color: #64748b;
+        }
+        .disabled-control {
+            opacity: 0.5;
+            pointer-events: none;
+            cursor: not-allowed;
+            filter: grayscale(1);
+        }
+        
+        /* Fondo Cyberpunk */
+        .bg-cyber {
+            background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            background-attachment: fixed;
         }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop')] bg-cover bg-center bg-fixed">
-    
-    <!-- Overlay oscuro para leer mejor -->
-    <div class="fixed inset-0 bg-slate-900/80 pointer-events-none"></div>
+<body class="min-h-screen flex flex-col bg-cyber overflow-hidden">
 
-    <div class="relative z-10 max-w-md mx-auto p-4 min-h-screen flex flex-col">
-        
-        <!-- Header -->
-        <header class="flex justify-between items-center py-6">
-            <div>
-                <h1 class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">
-                    Cloud Control
-                </h1>
-                <p class="text-xs text-slate-400">Sistema IoT Remoto</p>
+    <div id="authModal" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center">
+        <div class="glass-panel p-8 rounded-2xl w-full max-w-md text-center border-t-4 border-neon-blue">
+            <h2 class="text-3xl font-bold tech-font text-white mb-2">ACCESO AL SISTEMA</h2>
+            <p class="text-slate-400 mb-8 font-mono text-sm">SELECCIONE NIVEL DE PRIVILEGIO</p>
+
+            <div id="roleSelection" class="grid grid-cols-2 gap-4">
+                <button onclick="selectRole('operator')" class="p-6 bg-metal-800 border border-slate-600 rounded-xl hover:bg-metal-700 hover:border-neon-blue transition-all group">
+                    <i data-lucide="eye" class="w-10 h-10 mx-auto mb-3 text-slate-400 group-hover:text-neon-blue"></i>
+                    <div class="font-bold text-white">OPERARIO</div>
+                    <div class="text-xs text-slate-500 mt-1">Solo Visualización</div>
+                </button>
+                <button onclick="showAdminLogin()" class="p-6 bg-metal-800 border border-slate-600 rounded-xl hover:bg-metal-700 hover:border-neon-red transition-all group">
+                    <i data-lucide="shield-alert" class="w-10 h-10 mx-auto mb-3 text-slate-400 group-hover:text-neon-red"></i>
+                    <div class="font-bold text-white">ADMINISTRADOR</div>
+                    <div class="text-xs text-slate-500 mt-1">Control Total</div>
+                </button>
             </div>
-            <button onclick="openConfig()" class="p-2 rounded-full bg-slate-800 hover:bg-slate-700 transition border border-slate-600">
-                <i data-lucide="settings" class="w-5 h-5 text-slate-300"></i>
-            </button>
-        </header>
 
-        <!-- Estado de Conexión -->
-        <div id="statusIndicator" class="mb-8 flex items-center gap-3 bg-red-500/10 border border-red-500/20 p-3 rounded-lg backdrop-blur-sm">
-            <span class="relative flex h-3 w-3">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-            </span>
-            <span class="text-sm font-medium text-red-400">Desconectado de la Nube</span>
+            <div id="adminLogin" class="hidden mt-4">
+                <div class="mb-4 text-left">
+                    <label class="text-xs text-neon-red font-mono font-bold">CLAVE DE ACCESO</label>
+                    <input type="password" id="adminPass" class="w-full bg-metal-900 border border-slate-600 rounded p-3 text-white text-center tracking-[0.5em] focus:border-neon-red focus:outline-none focus:shadow-[0_0_10px_rgba(239,68,68,0.5)]" placeholder="****">
+                    <p id="loginError" class="text-red-500 text-xs mt-2 hidden">CLAVE INCORRECTA (Prueba: 1234)</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="cancelAdmin()" class="flex-1 py-2 bg-slate-700 rounded text-slate-300 hover:bg-slate-600">VOLVER</button>
+                    <button onclick="verifyAdmin()" class="flex-1 py-2 bg-neon-red text-black font-bold rounded hover:bg-red-500">ACCEDER</button>
+                </div>
+            </div>
         </div>
-
-        <!-- Controles -->
-        <main class="space-y-6 flex-grow">
-            
-            <!-- Foco 1 -->
-            <div class="glass-panel p-6 rounded-2xl transition-all duration-300" id="card1">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h2 class="text-xl font-semibold">Sala Principal</h2>
-                        <span class="text-xs text-slate-400 font-mono">/casa/sala</span>
-                    </div>
-                    <i data-lucide="lightbulb" id="icon1" class="w-8 h-8 text-slate-600 transition-colors duration-300"></i>
-                </div>
-                
-                <div class="flex gap-3">
-                    <button onclick="updateState('sala', true)" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-900 font-bold py-3 rounded-xl shadow-lg transform active:scale-95 transition">
-                        ON
-                    </button>
-                    <button onclick="updateState('sala', false)" class="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold py-3 rounded-xl shadow-lg transform active:scale-95 transition">
-                        OFF
-                    </button>
-                </div>
-            </div>
-
-            <!-- Foco 2 -->
-            <div class="glass-panel p-6 rounded-2xl transition-all duration-300" id="card2">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h2 class="text-xl font-semibold">Laboratorio</h2>
-                        <span class="text-xs text-slate-400 font-mono">/casa/laboratorio</span>
-                    </div>
-                    <i data-lucide="zap" id="icon2" class="w-8 h-8 text-slate-600 transition-colors duration-300"></i>
-                </div>
-                
-                <div class="flex gap-3">
-                    <button onclick="updateState('laboratorio', true)" class="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-400 hover:to-cyan-400 text-slate-900 font-bold py-3 rounded-xl shadow-lg transform active:scale-95 transition">
-                        ON
-                    </button>
-                    <button onclick="updateState('laboratorio', false)" class="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold py-3 rounded-xl shadow-lg transform active:scale-95 transition">
-                        OFF
-                    </button>
-                </div>
-            </div>
-
-        </main>
-
-        <footer class="mt-8 text-center text-xs text-slate-500 font-mono">
-            IST Vida Nueva - Investigación
-        </footer>
     </div>
 
-    <!-- Modal de Configuración -->
-    <div id="configModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden">
+    <div id="configModal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 backdrop-blur-sm hidden">
         <div class="bg-slate-900 border border-slate-700 p-6 rounded-2xl w-11/12 max-w-md shadow-2xl">
-            <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+            <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-white">
                 <i data-lucide="database" class="w-5 h-5 text-blue-400"></i>
-                Configuración Firebase
+                Configuración Cloud
             </h3>
-            <p class="text-sm text-slate-400 mb-4">Ingresa las credenciales de tu proyecto Firebase Realtime Database.</p>
-            
             <div class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 mb-1">API KEY</label>
-                    <input type="text" id="apiKeyInput" placeholder="AIzaSy..." class="w-full bg-slate-800 border border-slate-600 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none text-white">
+                    <input type="text" id="apiKeyInput" class="w-full bg-slate-800 border border-slate-600 rounded-lg p-3 text-sm text-white focus:border-neon-blue outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 mb-1">DATABASE URL</label>
-                    <input type="text" id="dbUrlInput" placeholder="https://proyecto.firebaseio.com" class="w-full bg-slate-800 border border-slate-600 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none text-white">
+                    <input type="text" id="dbUrlInput" class="w-full bg-slate-800 border border-slate-600 rounded-lg p-3 text-sm text-white focus:border-neon-blue outline-none">
                 </div>
             </div>
-
             <div class="mt-6 flex gap-3">
-                <button onclick="closeConfig()" class="flex-1 py-3 text-slate-400 hover:text-white transition">Cancelar</button>
-                <button onclick="saveConfig()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl">Guardar y Conectar</button>
+                <button onclick="document.getElementById('configModal').classList.add('hidden')" class="flex-1 py-3 text-slate-400 hover:text-white">Cancelar</button>
+                <button onclick="window.saveConfig()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl">Conectar</button>
             </div>
         </div>
     </div>
 
-    <!-- Firebase SDK Modular -->
+    <header class="bg-metal-900 border-b-2 border-neon-blue shadow-lg shadow-neon-blue/20 sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <div class="flex items-center gap-4">
+                <div class="bg-metal-800 p-2 rounded border border-neon-blue/50">
+                    <i data-lucide="cpu" class="w-8 h-8 text-neon-blue"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-wider tech-font text-white">TUVN SCADA</h1>
+                    <div class="flex items-center gap-2">
+                        <span id="userRoleBadge" class="text-[10px] px-2 py-0.5 rounded bg-slate-700 text-white font-bold tracking-wider uppercase border border-slate-500">
+                            NO IDENTIFICADO
+                        </span>
+                        <span id="autoModeBadge" class="hidden text-[10px] px-2 py-0.5 rounded bg-neon-purple text-white font-bold tracking-wider uppercase border border-white">
+                            AUTO
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col items-center md:items-end font-mono text-sm">
+                <div class="flex items-center gap-2 text-slate-400">
+                    <i data-lucide="calendar" class="w-4 h-4"></i>
+                    <span id="dateDisplay">--/--/----</span>
+                </div>
+                <div class="flex items-center gap-2 text-neon-green font-bold text-lg">
+                    <i data-lucide="clock" class="w-4 h-4"></i>
+                    <span id="timeDisplay">--:--:--</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div class="bg-metal-900 border border-slate-600 px-4 py-1 rounded-full flex items-center gap-2">
+                    <div class="relative flex h-3 w-3">
+                      <span id="pingDot" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-green opacity-75 hidden"></span>
+                      <span id="staticDot" class="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
+                    </div>
+                    <span id="statusText" class="text-xs font-mono text-slate-400 uppercase">OFFLINE</span>
+                </div>
+                <button onclick="document.getElementById('configModal').classList.remove('hidden')" class="bg-metal-800 p-2 rounded border border-slate-600 text-slate-400 hover:text-white" title="Configurar Cloud">
+                    <i data-lucide="settings" class="w-4 h-4"></i>
+                </button>
+                <button onclick="logout()" class="bg-metal-800 p-2 rounded border border-slate-600 text-slate-400 hover:text-red-400" title="Cerrar Sesión">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-8 overflow-y-auto">
+        
+        <div class="text-center mb-8">
+            <h2 class="text-3xl md:text-4xl font-bold text-white tech-font mb-2">PANEL DE CONTROL TÉRMICO</h2>
+            <div class="h-1 w-32 bg-gradient-to-r from-neon-blue to-neon-green mx-auto rounded"></div>
+        </div>
+
+        <div class="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="glass-panel p-4 rounded-xl flex flex-col justify-center items-center gap-3 border-dashed border-slate-600 lg:col-span-1 md:col-span-2">
+                <span class="text-xs text-slate-400 font-mono">MODO DE OPERACIÓN</span>
+                <button id="btn_auto" onclick="window.setAutomaticMode(true)" class="w-full py-3 rounded bg-metal-800 hover:bg-neon-purple/20 border border-neon-purple text-neon-purple font-bold tech-font transition-all">
+                    RESTAURAR AUTOMÁTICO
+                </button>
+            </div>
+
+            <div id="ctrl_led1" class="glass-panel p-4 rounded-xl flex items-center justify-between group transition-all duration-300">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-metal-900 rounded-full border border-slate-700 shadow-inner">
+                        <i data-lucide="lightbulb" class="w-6 h-6 text-slate-500" id="icon_led1"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold tech-font">SALA</h3>
+                        <p class="text-xs text-slate-400 font-mono" id="status_txt_led1">APAGADO</p>
+                    </div>
+                </div>
+                <button id="btn_led1" onclick="window.toggleLed('sala')" class="px-6 py-2 rounded border font-mono font-bold transition-all duration-300 led-btn-off disabled-control">
+                    OFF
+                </button>
+            </div>
+
+            <div id="ctrl_led2" class="glass-panel p-4 rounded-xl flex items-center justify-between group transition-all duration-300">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-metal-900 rounded-full border border-slate-700 shadow-inner">
+                        <i data-lucide="zap" class="w-6 h-6 text-slate-500" id="icon_led2"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold tech-font">LABORATORIO</h3>
+                        <p class="text-xs text-slate-400 font-mono" id="status_txt_led2">APAGADO</p>
+                    </div>
+                </div>
+                <button id="btn_led2" onclick="window.toggleLed('laboratorio')" class="px-6 py-2 rounded border font-mono font-bold transition-all duration-300 led-btn-off disabled-control">
+                    OFF
+                </button>
+            </div>
+        </div>
+
+        <div class="mb-8 flex justify-center">
+            <div class="glass-panel-avg rounded-xl overflow-hidden w-full md:w-2/3 lg:w-1/2 group relative">
+                <div class="bg-gradient-to-r from-metal-900 to-[#2e1065] p-3 border-b border-purple-500/30 flex justify-between items-center">
+                    <h3 class="text-neon-purple font-bold tech-font tracking-wide text-lg flex items-center gap-2">
+                        <i data-lucide="activity" class="w-5 h-5"></i>
+                        PROMEDIO GENERAL
+                    </h3>
+                    <span class="bg-neon-purple/20 text-neon-purple px-2 py-0.5 rounded text-xs font-mono border border-neon-purple/50">AVG-MAIN</span>
+                </div>
+                <div class="p-6 grid grid-cols-2 gap-4 items-center">
+                    <div>
+                        <div class="text-6xl md:text-7xl font-bold text-white tech-font drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]" id="val_avg">--</div>
+                        <div class="text-slate-400 font-mono mt-1">TEMP MEDIA (°C)</div>
+                    </div>
+                    
+                    <div class="h-28 w-full bg-metal-900 rounded border border-purple-500/30 relative overflow-hidden">
+                        <canvas id="chart_avg"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="glass-panel rounded-xl overflow-hidden group">
+                <div class="bg-gradient-to-r from-metal-800 to-metal-900 p-3 border-b border-slate-700 flex justify-between items-center">
+                    <h3 class="text-neon-blue font-bold tech-font tracking-wide">ANGAR 1</h3>
+                    <i data-lucide="thermometer" class="text-slate-500 w-5 h-5"></i>
+                </div>
+                <div class="p-4">
+                    <div class="flex justify-between items-end mb-4">
+                        <div class="text-5xl font-bold text-white tech-font" id="val1">--</div>
+                        <div class="text-slate-400 text-sm font-mono mb-2">°C</div>
+                    </div>
+                    <div class="h-24 w-full bg-metal-900 rounded border border-slate-700 relative overflow-hidden">
+                        <canvas id="chart1"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass-panel rounded-xl overflow-hidden group">
+                <div class="bg-gradient-to-r from-metal-800 to-metal-900 p-3 border-b border-slate-700 flex justify-between items-center">
+                    <h3 class="text-neon-green font-bold tech-font tracking-wide">ANGAR 2</h3>
+                    <i data-lucide="thermometer" class="text-slate-500 w-5 h-5"></i>
+                </div>
+                <div class="p-4">
+                    <div class="flex justify-between items-end mb-4">
+                        <div class="text-5xl font-bold text-white tech-font" id="val2">--</div>
+                        <div class="text-slate-400 text-sm font-mono mb-2">°C</div>
+                    </div>
+                    <div class="h-24 w-full bg-metal-900 rounded border border-slate-700 relative overflow-hidden">
+                        <canvas id="chart2"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-xl overflow-hidden group">
+                <div class="bg-gradient-to-r from-metal-800 to-metal-900 p-3 border-b border-slate-700 flex justify-between items-center">
+                    <h3 class="text-neon-blue font-bold tech-font tracking-wide">ANGAR 3</h3>
+                    <i data-lucide="thermometer" class="text-slate-500 w-5 h-5"></i>
+                </div>
+                <div class="p-4">
+                    <div class="flex justify-between items-end mb-4">
+                        <div class="text-5xl font-bold text-white tech-font" id="val3">--</div>
+                        <div class="text-slate-400 text-sm font-mono mb-2">°C</div>
+                    </div>
+                    <div class="h-24 w-full bg-metal-900 rounded border border-slate-700 relative overflow-hidden">
+                        <canvas id="chart3"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-xl overflow-hidden group">
+                <div class="bg-gradient-to-r from-metal-800 to-metal-900 p-3 border-b border-slate-700 flex justify-between items-center">
+                    <h3 class="text-neon-green font-bold tech-font tracking-wide">ANGAR 4</h3>
+                    <i data-lucide="thermometer" class="text-slate-500 w-5 h-5"></i>
+                </div>
+                <div class="p-4">
+                    <div class="flex justify-between items-end mb-4">
+                        <div class="text-5xl font-bold text-white tech-font" id="val4">--</div>
+                        <div class="text-slate-400 text-sm font-mono mb-2">°C</div>
+                    </div>
+                    <div class="h-24 w-full bg-metal-900 rounded border border-slate-700 relative overflow-hidden">
+                        <canvas id="chart4"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-metal-900 border-t border-slate-800 py-6 mt-auto">
+        <div class="container mx-auto px-4 text-center">
+            <h4 class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-3">Equipo de Desarrollo</h4>
+            <div class="flex flex-wrap justify-center gap-4 text-sm font-mono text-neon-blue">
+                <span class="bg-metal-800 px-3 py-1 rounded border border-slate-700">PALACIOS JOEY</span>
+                <span class="bg-metal-800 px-3 py-1 rounded border border-slate-700">ALVAREZ ALEJANDRO</span>
+                <span class="bg-metal-800 px-3 py-1 rounded border border-slate-700">FLORES EDUARDO</span>
+            </div>
+            <p class="text-slate-600 text-[10px] mt-6">© 2025 Instituto Superior Tecnológico Vida Nueva</p>
+        </div>
+    </footer>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
+        // --- VARIABLES GLOBALES ---
         let app, db;
-        
-        // Exponer funciones al scope global para los botones HTML
-        window.openConfig = () => document.getElementById('configModal').classList.remove('hidden');
-        window.closeConfig = () => document.getElementById('configModal').classList.add('hidden');
-        
+        let currentUserRole = null;
+        let ledStates = { sala: false, laboratorio: false };
+        let charts = [];
+        let isAutoMode = true;
+
+        // --- INICIALIZACIÓN DE ICONOS ---
+        lucide.createIcons();
+
+        // --- GRÁFICOS (CHART.JS) ---
+        const commonChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { display: false }, y: { display: false } },
+            elements: { point: { radius: 0 }, line: { tension: 0.4, borderWidth: 2 } },
+            animation: { duration: 0 }
+        };
+
+        const ctxIds = ['chart1', 'chart2', 'chart3', 'chart4', 'chart_avg'];
+        const chartColors = ['#06b6d4', '#10b981', '#06b6d4', '#10b981', '#a855f7'];
+
+        function initCharts() {
+            ctxIds.forEach((id, index) => {
+                const ctx = document.getElementById(id).getContext('2d');
+                charts[index] = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: Array(20).fill(''),
+                        datasets: [{
+                            data: Array(20).fill(0),
+                            borderColor: chartColors[index],
+                            backgroundColor: chartColors[index] + '20',
+                            fill: true
+                        }]
+                    },
+                    options: commonChartOptions
+                });
+            });
+        }
+        initCharts();
+
+        function updateChartData(index, newValue) {
+            if(!charts[index]) return;
+            const data = charts[index].data.datasets[0].data;
+            data.push(newValue);
+            data.shift();
+            charts[index].update();
+        }
+
+        // --- RELOJ ---
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('dateDisplay').textContent = now.toLocaleDateString('es-EC', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }).toUpperCase();
+            document.getElementById('timeDisplay').textContent = now.toLocaleTimeString('es-EC');
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // --- GESTIÓN DE ROLES ---
+        window.showAuthModal = () => {
+            document.getElementById('authModal').classList.remove('hidden');
+            document.getElementById('roleSelection').classList.remove('hidden');
+            document.getElementById('adminLogin').classList.add('hidden');
+        };
+
+        window.selectRole = (role) => {
+            if (role === 'operator') applyRole('operator');
+        };
+
+        window.showAdminLogin = () => {
+            document.getElementById('roleSelection').classList.add('hidden');
+            document.getElementById('adminLogin').classList.remove('hidden');
+        };
+
+        window.cancelAdmin = () => {
+            document.getElementById('adminLogin').classList.add('hidden');
+            document.getElementById('roleSelection').classList.remove('hidden');
+        };
+
+        window.verifyAdmin = () => {
+            const pass = document.getElementById('adminPass').value;
+            if (pass === '1234') {
+                applyRole('admin');
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+            }
+        };
+
+        window.logout = () => {
+            currentUserRole = null;
+            applyRole(null);
+            window.showAuthModal();
+        };
+
+        function applyRole(role) {
+            currentUserRole = role;
+            document.getElementById('authModal').classList.add('hidden');
+            const badge = document.getElementById('userRoleBadge');
+            const btn1 = document.getElementById('btn_led1');
+            const btn2 = document.getElementById('btn_led2');
+            const btnAuto = document.getElementById('btn_auto');
+
+            if (role === 'admin') {
+                badge.innerText = 'ADMINISTRADOR';
+                badge.className = "text-[10px] px-2 py-0.5 rounded bg-neon-red text-black font-bold tracking-wider uppercase border border-neon-red";
+                btn1.classList.remove('disabled-control');
+                btn2.classList.remove('disabled-control');
+                btnAuto.classList.remove('disabled-control');
+            } else if (role === 'operator') {
+                badge.innerText = 'OPERARIO';
+                badge.className = "text-[10px] px-2 py-0.5 rounded bg-slate-600 text-slate-200 font-bold tracking-wider uppercase border border-slate-500";
+                btn1.classList.add('disabled-control');
+                btn2.classList.add('disabled-control');
+                btnAuto.classList.add('disabled-control');
+            } else {
+                badge.innerText = 'NO IDENTIFICADO';
+                badge.className = "text-[10px] px-2 py-0.5 rounded bg-slate-700 text-white font-bold tracking-wider uppercase border border-slate-500";
+                btn1.classList.add('disabled-control');
+                btn2.classList.add('disabled-control');
+            }
+        }
+
+        // --- LÓGICA FIREBASE ---
         window.saveConfig = () => {
             const apiKey = document.getElementById('apiKeyInput').value.trim();
             const dbUrl = document.getElementById('dbUrlInput').value.trim();
-            
             if(!apiKey || !dbUrl) return Swal.fire('Error', 'Faltan datos', 'error');
-
+            
             localStorage.setItem('iot_api_key', apiKey);
             localStorage.setItem('iot_db_url', dbUrl);
-            
             initFirebase(apiKey, dbUrl);
-            closeConfig();
-        };
-
-        window.updateState = (foco, estado) => {
-            if(!db) return Swal.fire('Error', 'Configura Firebase primero', 'warning');
-            
-            // Escribir en la base de datos (/casa/sala o /casa/laboratorio)
-            set(ref(db, 'casa/' + foco), estado)
-                .then(() => {
-                    // Feedback háptico opcional
-                    if(navigator.vibrate) navigator.vibrate(50);
-                })
-                .catch((error) => Swal.fire('Error', error.message, 'error'));
+            document.getElementById('configModal').classList.add('hidden');
         };
 
         function initFirebase(apiKey, databaseURL) {
@@ -169,15 +478,36 @@
                 app = initializeApp(firebaseConfig);
                 db = getDatabase(app);
 
-                // Escuchar cambios en tiempo real
-                const casaRef = ref(db, 'casa');
-                
-                onValue(casaRef, (snapshot) => {
-                    updateStatusUI(true);
+                // Escuchar datos del monitor (LECTURA)
+                const monitorRef = ref(db, 'monitor');
+                onValue(monitorRef, (snapshot) => {
                     const data = snapshot.val();
-                    if(data) {
-                        updateFocoUI('sala', data.sala, 'card1', 'icon1');
-                        updateFocoUI('laboratorio', data.laboratorio, 'card2', 'icon2');
+                    updateStatusUI(true);
+                    
+                    if (data) {
+                        // Temperaturas
+                        if(data.temperaturas) {
+                            updateTemp('val1', data.temperaturas.t1, 0);
+                            updateTemp('val2', data.temperaturas.t2, 1);
+                            updateTemp('val3', data.temperaturas.t3, 2);
+                            updateTemp('val4', data.temperaturas.t4, 3);
+                            updateTemp('val_avg', data.temperaturas.promedio, 4);
+                        }
+
+                        // Estados (Feedback visual desde el ESP32)
+                        if(data.estado) {
+                            updateLedVisuals('sala', data.estado.sala === "ON", 'btn_led1', 'icon_led1', 'status_txt_led1');
+                            updateLedVisuals('laboratorio', data.estado.laboratorio === "ON", 'btn_led2', 'icon_led2', 'status_txt_led2');
+                            
+                            // Mostrar si está en AUTO
+                            const autoBadge = document.getElementById('autoModeBadge');
+                            if(data.estado.modo === "AUTO") {
+                                autoBadge.classList.remove('hidden');
+                            } else {
+                                autoBadge.classList.add('hidden');
+                            }
+                            isAutoMode = (data.estado.modo === "AUTO");
+                        }
                     }
                 }, (error) => {
                     console.error(error);
@@ -187,47 +517,92 @@
             } catch (e) {
                 console.error(e);
                 Swal.fire('Error', 'Credenciales inválidas', 'error');
+                updateStatusUI(false);
             }
         }
 
-        function updateFocoUI(name, state, cardId, iconId) {
-            const card = document.getElementById(cardId);
-            const icon = document.getElementById(iconId);
+        // --- ACTUALIZAR UI ---
+        function updateTemp(elementId, value, chartIndex) {
+            if(value === undefined) return;
+            document.getElementById(elementId).innerText = parseFloat(value).toFixed(1);
+            updateChartData(chartIndex, parseFloat(value));
             
-            if(state) {
-                // Estado ON
-                card.classList.add('glow-on');
-                card.classList.replace('border-slate-700', 'border-yellow-500');
-                icon.classList.add('text-yellow-400', 'fill-current');
-                icon.classList.remove('text-slate-600');
+            // Animación ping
+            const ping = document.getElementById('pingDot');
+            ping.classList.remove('hidden');
+            setTimeout(() => ping.classList.add('hidden'), 200);
+        }
+
+        function updateLedVisuals(key, isOn, btnId, iconId, txtId) {
+            ledStates[key] = isOn;
+            const btn = document.getElementById(btnId);
+            const icon = document.getElementById(iconId);
+            const txt = document.getElementById(txtId);
+
+            if (isOn) {
+                btn.innerText = "ON";
+                btn.classList.replace('led-btn-off', 'led-btn-on');
+                icon.classList.add('text-neon-green');
+                icon.classList.remove('text-slate-500');
+                txt.innerText = "ENCENDIDO";
+                txt.classList.add('text-neon-green');
             } else {
-                // Estado OFF
-                card.classList.remove('glow-on');
-                card.classList.replace('border-yellow-500', 'border-slate-700');
-                icon.classList.remove('text-yellow-400', 'fill-current');
-                icon.classList.add('text-slate-600');
+                btn.innerText = "OFF";
+                btn.classList.replace('led-btn-on', 'led-btn-off');
+                icon.classList.remove('text-neon-green');
+                icon.classList.add('text-slate-500');
+                txt.innerText = "APAGADO";
+                txt.classList.remove('text-neon-green');
             }
         }
 
         function updateStatusUI(connected) {
-            const el = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const staticDot = document.getElementById('staticDot');
             if(connected) {
-                el.className = "mb-8 flex items-center gap-3 bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-lg backdrop-blur-sm transition-all";
-                el.innerHTML = `
-                    <span class="relative flex h-3 w-3">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                    </span>
-                    <span class="text-sm font-medium text-emerald-400">Conectado a Firebase</span>
-                `;
+                statusText.innerText = "ONLINE";
+                statusText.classList.replace('text-slate-400', 'text-neon-green');
+                staticDot.classList.replace('bg-red-600', 'bg-neon-green');
+                staticDot.classList.add('animate-pulse');
             } else {
-                el.className = "mb-8 flex items-center gap-3 bg-red-500/10 border border-red-500/20 p-3 rounded-lg backdrop-blur-sm transition-all";
-                el.innerHTML = `<span class="h-3 w-3 rounded-full bg-red-500"></span><span class="text-sm font-medium text-red-400">Desconectado</span>`;
+                statusText.innerText = "OFFLINE";
+                statusText.classList.replace('text-neon-green', 'text-slate-400');
+                staticDot.classList.replace('bg-neon-green', 'bg-red-600');
+                staticDot.classList.remove('animate-pulse');
             }
         }
 
-        // Cargar config guardada al inicio
-        lucide.createIcons();
+        // --- CONTROL (ESCRITURA) ---
+        window.toggleLed = (foco) => {
+            if(currentUserRole !== 'admin') return;
+            if(!db) return Swal.fire('Error', 'No conectado', 'warning');
+
+            // Invertimos el estado actual
+            const newState = !ledStates[foco];
+            
+            // Escribimos en /control
+            set(ref(db, 'control/' + foco), newState);
+            
+            // Al tocar manualmente, pasamos a MANUAL (desactivar auto en ESP32)
+            set(ref(db, 'control/modoAutomatico'), false);
+        };
+
+        window.setAutomaticMode = (enable) => {
+             if(currentUserRole !== 'admin') return;
+             if(!db) return;
+             set(ref(db, 'control/modoAutomatico'), enable);
+             Swal.fire({
+                 title: 'Modo Automático',
+                 text: 'El sistema controlará las luces según la temperatura.',
+                 icon: 'info',
+                 timer: 1500,
+                 showConfirmButton: false,
+                 background: '#1e293b',
+                 color: '#fff'
+             });
+        };
+
+        // Carga Inicial
         const savedKey = localStorage.getItem('iot_api_key');
         const savedUrl = localStorage.getItem('iot_db_url');
         
@@ -236,10 +611,12 @@
             document.getElementById('dbUrlInput').value = savedUrl;
             initFirebase(savedKey, savedUrl);
         } else {
-            setTimeout(openConfig, 1000); // Abrir config si no hay datos
+            setTimeout(() => document.getElementById('configModal').classList.remove('hidden'), 1000);
         }
+        
+        // Mostrar Login al inicio
+        window.showAuthModal();
 
     </script>
 </body>
 </html>
-
