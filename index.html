@@ -15,19 +15,10 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        'tech': ['Orbitron', 'sans-serif'],
-                        'body': ['Roboto', 'sans-serif'],
-                    },
+                    fontFamily: { 'tech': ['Orbitron', 'sans-serif'], 'body': ['Roboto', 'sans-serif'] },
                     colors: {
                         metal: { 900: '#0f172a', 800: '#1e293b', 700: '#334155' },
-                        neon: {
-                            blue: '#06b6d4',
-                            green: '#10b981',
-                            purple: '#a855f7',
-                            red: '#ef4444', 
-                            orange: '#f97316'
-                        }
+                        neon: { blue: '#06b6d4', green: '#10b981', purple: '#a855f7', red: '#ef4444', orange: '#f97316' }
                     }
                 }
             }
@@ -36,46 +27,13 @@
 
     <style>
         body { font-family: 'Roboto', sans-serif; background-color: #0b1120; color: #e2e8f0; }
-        
-        /* Efectos de Cristal y Neón */
-        .glass-panel {
-            background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
-            border: 1px solid rgba(6, 182, 212, 0.3);
-            box-shadow: 0 0 15px rgba(6, 182, 212, 0.1);
-            backdrop-filter: blur(5px);
-        }
-        .glass-panel-avg {
-            background: linear-gradient(145deg, rgba(40, 30, 60, 0.9), rgba(15, 23, 42, 0.95));
-            border: 1px solid rgba(168, 85, 247, 0.5);
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
-            backdrop-filter: blur(5px);
-        }
+        .glass-panel { background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95)); border: 1px solid rgba(6, 182, 212, 0.3); box-shadow: 0 0 15px rgba(6, 182, 212, 0.1); backdrop-filter: blur(5px); }
+        .glass-panel-avg { background: linear-gradient(145deg, rgba(40, 30, 60, 0.9), rgba(15, 23, 42, 0.95)); border: 1px solid rgba(168, 85, 247, 0.5); box-shadow: 0 0 20px rgba(168, 85, 247, 0.2); backdrop-filter: blur(5px); }
         .tech-font { font-family: 'Orbitron', sans-serif; }
-        
-        /* Estilos de botones de Actuadores */
-        .led-btn-on {
-            background-color: rgba(16, 185, 129, 0.2);
-            border-color: #10b981;
-            box-shadow: 0 0 15px #10b981;
-            color: #10b981;
-        }
-        .led-btn-off {
-            background-color: rgba(30, 41, 59, 0.5);
-            border-color: #334155;
-            color: #64748b;
-        }
-        .disabled-control {
-            opacity: 0.5;
-            pointer-events: none;
-            cursor: not-allowed;
-            filter: grayscale(1);
-        }
-        
-        /* Fondo Cyberpunk */
-        .bg-cyber {
-            background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
-            background-attachment: fixed;
-        }
+        .led-btn-on { background-color: rgba(16, 185, 129, 0.2); border-color: #10b981; box-shadow: 0 0 15px #10b981; color: #10b981; }
+        .led-btn-off { background-color: rgba(30, 41, 59, 0.5); border-color: #334155; color: #64748b; }
+        .disabled-control { opacity: 0.5; pointer-events: none; cursor: not-allowed; filter: grayscale(1); }
+        .bg-cyber { background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); background-attachment: fixed; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col bg-cyber overflow-hidden">
@@ -101,7 +59,7 @@
             <div id="adminLogin" class="hidden mt-4">
                 <div class="mb-4 text-left">
                     <label class="text-xs text-neon-red font-mono font-bold">CLAVE DE ACCESO</label>
-                    <input type="password" id="adminPass" class="w-full bg-metal-900 border border-slate-600 rounded p-3 text-white text-center tracking-[0.5em] focus:border-neon-red focus:outline-none focus:shadow-[0_0_10px_rgba(239,68,68,0.5)]" placeholder="****">
+                    <input type="password" id="adminPass" class="w-full bg-metal-900 border border-slate-600 rounded p-3 text-white text-center tracking-[0.5em] focus:border-neon-red focus:outline-none" placeholder="****">
                     <p id="loginError" class="text-red-500 text-xs mt-2 hidden">CLAVE INCORRECTA (Prueba: 1234)</p>
                 </div>
                 <div class="flex gap-2">
@@ -115,8 +73,7 @@
     <div id="configModal" class="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 backdrop-blur-sm hidden">
         <div class="bg-slate-900 border border-slate-700 p-6 rounded-2xl w-11/12 max-w-md shadow-2xl">
             <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-white">
-                <i data-lucide="database" class="w-5 h-5 text-blue-400"></i>
-                Configuración Cloud
+                <i data-lucide="database" class="w-5 h-5 text-blue-400"></i> Configuración Cloud
             </h3>
             <div class="space-y-4">
                 <div>
@@ -137,35 +94,21 @@
 
     <header class="bg-metal-900 border-b-2 border-neon-blue shadow-lg shadow-neon-blue/20 sticky top-0 z-50">
         <div class="container mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
-            
             <div class="flex items-center gap-4">
-                <div class="bg-metal-800 p-2 rounded border border-neon-blue/50">
-                    <i data-lucide="cpu" class="w-8 h-8 text-neon-blue"></i>
-                </div>
+                <div class="bg-metal-800 p-2 rounded border border-neon-blue/50"><i data-lucide="cpu" class="w-8 h-8 text-neon-blue"></i></div>
                 <div>
                     <h1 class="text-2xl font-bold tracking-wider tech-font text-white">TUVN SCADA</h1>
                     <div class="flex items-center gap-2">
-                        <span id="userRoleBadge" class="text-[10px] px-2 py-0.5 rounded bg-slate-700 text-white font-bold tracking-wider uppercase border border-slate-500">
-                            NO IDENTIFICADO
-                        </span>
-                        <span id="autoModeBadge" class="hidden text-[10px] px-2 py-0.5 rounded bg-neon-purple text-white font-bold tracking-wider uppercase border border-white">
-                            AUTO
-                        </span>
+                        <span id="userRoleBadge" class="text-[10px] px-2 py-0.5 rounded bg-slate-700 text-white font-bold tracking-wider uppercase border border-slate-500">NO IDENTIFICADO</span>
+                        <span id="autoModeBadge" class="hidden text-[10px] px-2 py-0.5 rounded bg-neon-purple text-white font-bold tracking-wider uppercase border border-white">AUTO</span>
+                        <span id="manualModeBadge" class="hidden text-[10px] px-2 py-0.5 rounded bg-yellow-500 text-black font-bold tracking-wider uppercase border border-yellow-200">MANUAL</span>
                     </div>
                 </div>
             </div>
-
             <div class="flex flex-col items-center md:items-end font-mono text-sm">
-                <div class="flex items-center gap-2 text-slate-400">
-                    <i data-lucide="calendar" class="w-4 h-4"></i>
-                    <span id="dateDisplay">--/--/----</span>
-                </div>
-                <div class="flex items-center gap-2 text-neon-green font-bold text-lg">
-                    <i data-lucide="clock" class="w-4 h-4"></i>
-                    <span id="timeDisplay">--:--:--</span>
-                </div>
+                <div class="flex items-center gap-2 text-slate-400"><i data-lucide="calendar" class="w-4 h-4"></i><span id="dateDisplay">--/--/----</span></div>
+                <div class="flex items-center gap-2 text-neon-green font-bold text-lg"><i data-lucide="clock" class="w-4 h-4"></i><span id="timeDisplay">--:--:--</span></div>
             </div>
-
             <div class="flex items-center gap-3">
                 <div class="bg-metal-900 border border-slate-600 px-4 py-1 rounded-full flex items-center gap-2">
                     <div class="relative flex h-3 w-3">
@@ -174,18 +117,13 @@
                     </div>
                     <span id="statusText" class="text-xs font-mono text-slate-400 uppercase">OFFLINE</span>
                 </div>
-                <button onclick="document.getElementById('configModal').classList.remove('hidden')" class="bg-metal-800 p-2 rounded border border-slate-600 text-slate-400 hover:text-white" title="Configurar Cloud">
-                    <i data-lucide="settings" class="w-4 h-4"></i>
-                </button>
-                <button onclick="logout()" class="bg-metal-800 p-2 rounded border border-slate-600 text-slate-400 hover:text-red-400" title="Cerrar Sesión">
-                    <i data-lucide="log-out" class="w-4 h-4"></i>
-                </button>
+                <button onclick="document.getElementById('configModal').classList.remove('hidden')" class="bg-metal-800 p-2 rounded border border-slate-600 text-slate-400 hover:text-white"><i data-lucide="settings" class="w-4 h-4"></i></button>
+                <button onclick="logout()" class="bg-metal-800 p-2 rounded border border-slate-600 text-slate-400 hover:text-red-400"><i data-lucide="log-out" class="w-4 h-4"></i></button>
             </div>
         </div>
     </header>
 
     <main class="flex-grow container mx-auto px-4 py-8 overflow-y-auto">
-        
         <div class="text-center mb-8">
             <h2 class="text-3xl md:text-4xl font-bold text-white tech-font mb-2">PANEL DE CONTROL TÉRMICO</h2>
             <div class="h-1 w-32 bg-gradient-to-r from-neon-blue to-neon-green mx-auto rounded"></div>
@@ -233,10 +171,7 @@
         <div class="mb-8 flex justify-center">
             <div class="glass-panel-avg rounded-xl overflow-hidden w-full md:w-2/3 lg:w-1/2 group relative">
                 <div class="bg-gradient-to-r from-metal-900 to-[#2e1065] p-3 border-b border-purple-500/30 flex justify-between items-center">
-                    <h3 class="text-neon-purple font-bold tech-font tracking-wide text-lg flex items-center gap-2">
-                        <i data-lucide="activity" class="w-5 h-5"></i>
-                        PROMEDIO GENERAL
-                    </h3>
+                    <h3 class="text-neon-purple font-bold tech-font tracking-wide text-lg flex items-center gap-2"><i data-lucide="activity" class="w-5 h-5"></i> PROMEDIO GENERAL</h3>
                     <span class="bg-neon-purple/20 text-neon-purple px-2 py-0.5 rounded text-xs font-mono border border-neon-purple/50">AVG-MAIN</span>
                 </div>
                 <div class="p-6 grid grid-cols-2 gap-4 items-center">
@@ -244,7 +179,6 @@
                         <div class="text-6xl md:text-7xl font-bold text-white tech-font drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]" id="val_avg">--</div>
                         <div class="text-slate-400 font-mono mt-1">TEMP MEDIA (°C)</div>
                     </div>
-                    
                     <div class="h-28 w-full bg-metal-900 rounded border border-purple-500/30 relative overflow-hidden">
                         <canvas id="chart_avg"></canvas>
                     </div>
@@ -255,69 +189,45 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="glass-panel rounded-xl overflow-hidden group">
                 <div class="bg-gradient-to-r from-metal-800 to-metal-900 p-3 border-b border-slate-700 flex justify-between items-center">
-                    <h3 class="text-neon-blue font-bold tech-font tracking-wide">ANGAR 1</h3>
+                    <h3 class="text-neon-blue font-bold tech-font tracking-wide">HANGAR 1</h3>
                     <i data-lucide="thermometer" class="text-slate-500 w-5 h-5"></i>
                 </div>
                 <div class="p-4">
-                    <div class="flex justify-between items-end mb-4">
-                        <div class="text-5xl font-bold text-white tech-font" id="val1">--</div>
-                        <div class="text-slate-400 text-sm font-mono mb-2">°C</div>
-                    </div>
-                    <div class="h-24 w-full bg-metal-900 rounded border border-slate-700 relative overflow-hidden">
-                        <canvas id="chart1"></canvas>
-                    </div>
+                    <div class="flex justify-between items-end mb-4"><div class="text-5xl font-bold text-white tech-font" id="val1">--</div><div class="text-slate-400 text-sm font-mono mb-2">°C</div></div>
+                    <div class="h-24 w-full bg-metal-900 rounded border border-slate-700 relative overflow-hidden"><canvas id="chart1"></canvas></div>
                 </div>
             </div>
-            
             <div class="glass-panel rounded-xl overflow-hidden group">
                 <div class="bg-gradient-to-r from-metal-800 to-metal-900 p-3 border-b border-slate-700 flex justify-between items-center">
-                    <h3 class="text-neon-green font-bold tech-font tracking-wide">ANGAR 2</h3>
+                    <h3 class="text-neon-green font-bold tech-font tracking-wide">HANGAR 2</h3>
                     <i data-lucide="thermometer" class="text-slate-500 w-5 h-5"></i>
                 </div>
                 <div class="p-4">
-                    <div class="flex justify-between items-end mb-4">
-                        <div class="text-5xl font-bold text-white tech-font" id="val2">--</div>
-                        <div class="text-slate-400 text-sm font-mono mb-2">°C</div>
-                    </div>
-                    <div class="h-24 w-full bg-metal-900 rounded border border-slate-700 relative overflow-hidden">
-                        <canvas id="chart2"></canvas>
-                    </div>
+                    <div class="flex justify-between items-end mb-4"><div class="text-5xl font-bold text-white tech-font" id="val2">--</div><div class="text-slate-400 text-sm font-mono mb-2">°C</div></div>
+                    <div class="h-24 w-full bg-metal-900 rounded border border-slate-700 relative overflow-hidden"><canvas id="chart2"></canvas></div>
                 </div>
             </div>
-
             <div class="glass-panel rounded-xl overflow-hidden group">
                 <div class="bg-gradient-to-r from-metal-800 to-metal-900 p-3 border-b border-slate-700 flex justify-between items-center">
-                    <h3 class="text-neon-blue font-bold tech-font tracking-wide">ANGAR 3</h3>
+                    <h3 class="text-neon-blue font-bold tech-font tracking-wide">HANGAR 3</h3>
                     <i data-lucide="thermometer" class="text-slate-500 w-5 h-5"></i>
                 </div>
                 <div class="p-4">
-                    <div class="flex justify-between items-end mb-4">
-                        <div class="text-5xl font-bold text-white tech-font" id="val3">--</div>
-                        <div class="text-slate-400 text-sm font-mono mb-2">°C</div>
-                    </div>
-                    <div class="h-24 w-full bg-metal-900 rounded border border-slate-700 relative overflow-hidden">
-                        <canvas id="chart3"></canvas>
-                    </div>
+                    <div class="flex justify-between items-end mb-4"><div class="text-5xl font-bold text-white tech-font" id="val3">--</div><div class="text-slate-400 text-sm font-mono mb-2">°C</div></div>
+                    <div class="h-24 w-full bg-metal-900 rounded border border-slate-700 relative overflow-hidden"><canvas id="chart3"></canvas></div>
                 </div>
             </div>
-
             <div class="glass-panel rounded-xl overflow-hidden group">
                 <div class="bg-gradient-to-r from-metal-800 to-metal-900 p-3 border-b border-slate-700 flex justify-between items-center">
-                    <h3 class="text-neon-green font-bold tech-font tracking-wide">ANGAR 4</h3>
+                    <h3 class="text-neon-green font-bold tech-font tracking-wide">HANGAR 4</h3>
                     <i data-lucide="thermometer" class="text-slate-500 w-5 h-5"></i>
                 </div>
                 <div class="p-4">
-                    <div class="flex justify-between items-end mb-4">
-                        <div class="text-5xl font-bold text-white tech-font" id="val4">--</div>
-                        <div class="text-slate-400 text-sm font-mono mb-2">°C</div>
-                    </div>
-                    <div class="h-24 w-full bg-metal-900 rounded border border-slate-700 relative overflow-hidden">
-                        <canvas id="chart4"></canvas>
-                    </div>
+                    <div class="flex justify-between items-end mb-4"><div class="text-5xl font-bold text-white tech-font" id="val4">--</div><div class="text-slate-400 text-sm font-mono mb-2">°C</div></div>
+                    <div class="h-24 w-full bg-metal-900 rounded border border-slate-700 relative overflow-hidden"><canvas id="chart4"></canvas></div>
                 </div>
             </div>
         </div>
-
     </main>
 
     <footer class="bg-metal-900 border-t border-slate-800 py-6 mt-auto">
@@ -336,26 +246,20 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- VARIABLES GLOBALES ---
         let app, db;
         let currentUserRole = null;
-        let ledStates = { sala: false, laboratorio: false };
+        let ledStates = { sala: false, laboratorio: false }; // Estado local para recordar
         let charts = [];
-        let isAutoMode = true;
-
-        // --- INICIALIZACIÓN DE ICONOS ---
+        
         lucide.createIcons();
 
-        // --- GRÁFICOS (CHART.JS) ---
+        // --- CHART JS SETUP ---
         const commonChartOptions = {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
             scales: { x: { display: false }, y: { display: false } },
             elements: { point: { radius: 0 }, line: { tension: 0.4, borderWidth: 2 } },
             animation: { duration: 0 }
         };
-
         const ctxIds = ['chart1', 'chart2', 'chart3', 'chart4', 'chart_avg'];
         const chartColors = ['#06b6d4', '#10b981', '#06b6d4', '#10b981', '#a855f7'];
 
@@ -366,12 +270,7 @@
                     type: 'line',
                     data: {
                         labels: Array(20).fill(''),
-                        datasets: [{
-                            data: Array(20).fill(0),
-                            borderColor: chartColors[index],
-                            backgroundColor: chartColors[index] + '20',
-                            fill: true
-                        }]
+                        datasets: [{ data: Array(20).fill(0), borderColor: chartColors[index], backgroundColor: chartColors[index] + '20', fill: true }]
                     },
                     options: commonChartOptions
                 });
@@ -394,38 +293,27 @@
             document.getElementById('timeDisplay').textContent = now.toLocaleTimeString('es-EC');
         }
         setInterval(updateClock, 1000);
-        updateClock();
 
-        // --- GESTIÓN DE ROLES ---
+        // --- ROLES Y LOGIN ---
         window.showAuthModal = () => {
             document.getElementById('authModal').classList.remove('hidden');
             document.getElementById('roleSelection').classList.remove('hidden');
             document.getElementById('adminLogin').classList.add('hidden');
         };
 
-        window.selectRole = (role) => {
-            if (role === 'operator') applyRole('operator');
-        };
-
+        window.selectRole = (role) => role === 'operator' && applyRole('operator');
         window.showAdminLogin = () => {
             document.getElementById('roleSelection').classList.add('hidden');
             document.getElementById('adminLogin').classList.remove('hidden');
         };
-
         window.cancelAdmin = () => {
             document.getElementById('adminLogin').classList.add('hidden');
             document.getElementById('roleSelection').classList.remove('hidden');
         };
-
         window.verifyAdmin = () => {
-            const pass = document.getElementById('adminPass').value;
-            if (pass === '1234') {
-                applyRole('admin');
-            } else {
-                document.getElementById('loginError').classList.remove('hidden');
-            }
+            if (document.getElementById('adminPass').value === '1234') applyRole('admin');
+            else document.getElementById('loginError').classList.remove('hidden');
         };
-
         window.logout = () => {
             currentUserRole = null;
             applyRole(null);
@@ -436,36 +324,27 @@
             currentUserRole = role;
             document.getElementById('authModal').classList.add('hidden');
             const badge = document.getElementById('userRoleBadge');
-            const btn1 = document.getElementById('btn_led1');
-            const btn2 = document.getElementById('btn_led2');
-            const btnAuto = document.getElementById('btn_auto');
-
+            const btns = [document.getElementById('btn_led1'), document.getElementById('btn_led2'), document.getElementById('btn_auto')];
+            
             if (role === 'admin') {
                 badge.innerText = 'ADMINISTRADOR';
                 badge.className = "text-[10px] px-2 py-0.5 rounded bg-neon-red text-black font-bold tracking-wider uppercase border border-neon-red";
-                btn1.classList.remove('disabled-control');
-                btn2.classList.remove('disabled-control');
-                btnAuto.classList.remove('disabled-control');
+                btns.forEach(b => b.classList.remove('disabled-control'));
             } else if (role === 'operator') {
                 badge.innerText = 'OPERARIO';
                 badge.className = "text-[10px] px-2 py-0.5 rounded bg-slate-600 text-slate-200 font-bold tracking-wider uppercase border border-slate-500";
-                btn1.classList.add('disabled-control');
-                btn2.classList.add('disabled-control');
-                btnAuto.classList.add('disabled-control');
+                btns.forEach(b => b.classList.add('disabled-control'));
             } else {
                 badge.innerText = 'NO IDENTIFICADO';
-                badge.className = "text-[10px] px-2 py-0.5 rounded bg-slate-700 text-white font-bold tracking-wider uppercase border border-slate-500";
-                btn1.classList.add('disabled-control');
-                btn2.classList.add('disabled-control');
+                btns.forEach(b => b.classList.add('disabled-control'));
             }
         }
 
-        // --- LÓGICA FIREBASE ---
+        // --- FIREBASE LOGIC ---
         window.saveConfig = () => {
             const apiKey = document.getElementById('apiKeyInput').value.trim();
             const dbUrl = document.getElementById('dbUrlInput').value.trim();
             if(!apiKey || !dbUrl) return Swal.fire('Error', 'Faltan datos', 'error');
-            
             localStorage.setItem('iot_api_key', apiKey);
             localStorage.setItem('iot_db_url', dbUrl);
             initFirebase(apiKey, dbUrl);
@@ -474,13 +353,11 @@
 
         function initFirebase(apiKey, databaseURL) {
             try {
-                const firebaseConfig = { apiKey, databaseURL };
-                app = initializeApp(firebaseConfig);
+                app = initializeApp({ apiKey, databaseURL });
                 db = getDatabase(app);
 
-                // Escuchar datos del monitor (LECTURA)
-                const monitorRef = ref(db, 'monitor');
-                onValue(monitorRef, (snapshot) => {
+                // ESCUCHAR DATOS (Monitor)
+                onValue(ref(db, 'monitor'), (snapshot) => {
                     const data = snapshot.val();
                     updateStatusUI(true);
                     
@@ -494,25 +371,23 @@
                             updateTemp('val_avg', data.temperaturas.promedio, 4);
                         }
 
-                        // Estados (Feedback visual desde el ESP32)
+                        // Estado (Feedback real desde ESP32)
                         if(data.estado) {
+                            // Actualizar interfaz visual de los botones
                             updateLedVisuals('sala', data.estado.sala === "ON", 'btn_led1', 'icon_led1', 'status_txt_led1');
                             updateLedVisuals('laboratorio', data.estado.laboratorio === "ON", 'btn_led2', 'icon_led2', 'status_txt_led2');
                             
-                            // Mostrar si está en AUTO
-                            const autoBadge = document.getElementById('autoModeBadge');
+                            // Mostrar Badge Auto/Manual
                             if(data.estado.modo === "AUTO") {
-                                autoBadge.classList.remove('hidden');
+                                document.getElementById('autoModeBadge').classList.remove('hidden');
+                                document.getElementById('manualModeBadge').classList.add('hidden');
                             } else {
-                                autoBadge.classList.add('hidden');
+                                document.getElementById('autoModeBadge').classList.add('hidden');
+                                document.getElementById('manualModeBadge').classList.remove('hidden');
                             }
-                            isAutoMode = (data.estado.modo === "AUTO");
                         }
                     }
-                }, (error) => {
-                    console.error(error);
-                    updateStatusUI(false);
-                });
+                }, (error) => { console.error(error); updateStatusUI(false); });
 
             } catch (e) {
                 console.error(e);
@@ -521,20 +396,17 @@
             }
         }
 
-        // --- ACTUALIZAR UI ---
-        function updateTemp(elementId, value, chartIndex) {
-            if(value === undefined) return;
-            document.getElementById(elementId).innerText = parseFloat(value).toFixed(1);
-            updateChartData(chartIndex, parseFloat(value));
-            
-            // Animación ping
+        function updateTemp(elId, val, chartIdx) {
+            if(val === undefined) return;
+            document.getElementById(elId).innerText = parseFloat(val).toFixed(1);
+            updateChartData(chartIdx, parseFloat(val));
             const ping = document.getElementById('pingDot');
             ping.classList.remove('hidden');
             setTimeout(() => ping.classList.add('hidden'), 200);
         }
 
         function updateLedVisuals(key, isOn, btnId, iconId, txtId) {
-            ledStates[key] = isOn;
+            ledStates[key] = isOn; // Guardamos estado actual
             const btn = document.getElementById(btnId);
             const icon = document.getElementById(iconId);
             const txt = document.getElementById(txtId);
@@ -557,33 +429,31 @@
         }
 
         function updateStatusUI(connected) {
-            const statusText = document.getElementById('statusText');
-            const staticDot = document.getElementById('staticDot');
+            const txt = document.getElementById('statusText');
+            const dot = document.getElementById('staticDot');
             if(connected) {
-                statusText.innerText = "ONLINE";
-                statusText.classList.replace('text-slate-400', 'text-neon-green');
-                staticDot.classList.replace('bg-red-600', 'bg-neon-green');
-                staticDot.classList.add('animate-pulse');
+                txt.innerText = "ONLINE"; txt.classList.replace('text-slate-400', 'text-neon-green');
+                dot.classList.replace('bg-red-600', 'bg-neon-green'); dot.classList.add('animate-pulse');
             } else {
-                statusText.innerText = "OFFLINE";
-                statusText.classList.replace('text-neon-green', 'text-slate-400');
-                staticDot.classList.replace('bg-neon-green', 'bg-red-600');
-                staticDot.classList.remove('animate-pulse');
+                txt.innerText = "OFFLINE"; txt.classList.replace('text-neon-green', 'text-slate-400');
+                dot.classList.replace('bg-neon-green', 'bg-red-600'); dot.classList.remove('animate-pulse');
             }
         }
 
         // --- CONTROL (ESCRITURA) ---
+        
+        // ESTA ES LA PARTE IMPORTANTE QUE PEDISTE:
+        // AL TOCAR UN BOTÓN MANUALMENTE, ENVIAMOS "FALSE" A MODO AUTOMÁTICO
         window.toggleLed = (foco) => {
             if(currentUserRole !== 'admin') return;
             if(!db) return Swal.fire('Error', 'No conectado', 'warning');
 
-            // Invertimos el estado actual
-            const newState = !ledStates[foco];
+            const newState = !ledStates[foco]; // Invertimos estado actual
             
-            // Escribimos en /control
+            // 1. Enviar comando del foco
             set(ref(db, 'control/' + foco), newState);
             
-            // Al tocar manualmente, pasamos a MANUAL (desactivar auto en ESP32)
+            // 2. IMPORTANTÍSIMO: Desactivar modo automático inmediatamente
             set(ref(db, 'control/modoAutomatico'), false);
         };
 
@@ -592,31 +462,23 @@
              if(!db) return;
              set(ref(db, 'control/modoAutomatico'), enable);
              Swal.fire({
-                 title: 'Modo Automático',
-                 text: 'El sistema controlará las luces según la temperatura.',
-                 icon: 'info',
-                 timer: 1500,
-                 showConfirmButton: false,
-                 background: '#1e293b',
-                 color: '#fff'
+                 title: enable ? 'Modo Automático' : 'Modo Manual',
+                 text: enable ? 'El sistema toma el control.' : 'Control manual activado.',
+                 icon: 'info', timer: 1500, showConfirmButton: false,
+                 background: '#1e293b', color: '#fff'
              });
         };
 
-        // Carga Inicial
-        const savedKey = localStorage.getItem('iot_api_key');
-        const savedUrl = localStorage.getItem('iot_db_url');
+        // Inicio
+        const k = localStorage.getItem('iot_api_key');
+        const u = localStorage.getItem('iot_db_url');
+        if(k && u) {
+            document.getElementById('apiKeyInput').value = k;
+            document.getElementById('dbUrlInput').value = u;
+            initFirebase(k, u);
+        } else setTimeout(() => document.getElementById('configModal').classList.remove('hidden'), 1000);
         
-        if(savedKey && savedUrl) {
-            document.getElementById('apiKeyInput').value = savedKey;
-            document.getElementById('dbUrlInput').value = savedUrl;
-            initFirebase(savedKey, savedUrl);
-        } else {
-            setTimeout(() => document.getElementById('configModal').classList.remove('hidden'), 1000);
-        }
-        
-        // Mostrar Login al inicio
         window.showAuthModal();
-
     </script>
 </body>
 </html>
